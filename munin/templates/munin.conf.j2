@@ -1,0 +1,14 @@
+dbdir /var/lib/munin
+htmldir /var/www/html/munin
+logdir /var/log/munin
+rundir /var/run/munin
+tmpldir /etc/munin/templates
+includedir /etc/munin/conf.d
+graph_strategy cron
+cgiurl_graph /munin-cgi/munin-cgi-graph
+html_strategy cron
+max_processes 8
+
+[{{inventory_hostname}}]
+    address 127.0.0.1
+    use_node_name yes

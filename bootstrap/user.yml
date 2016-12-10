@@ -1,0 +1,26 @@
+---
+- hosts: all
+  user: root
+  vars:
+    username: olli
+    public_key: ~/.ssh/id_dsa.pub
+  vars_prompt:
+  - name: "password"
+    prompt: "password for new user"
+    private: yes
+    encrypt: "md5_crypt" #need to have python-passlib installed in local machine before we can use it
+    confirm: yes
+    salt_size: 7
+  tasks:
+
+  - name: install libselinux-python
+    yum: name=libselinux-python state=installed
+    tags: [bootstrap, user]
+
+  - name: create user and add to wheel group
+    user: name={{username}} password={{password}} group=wheel
+    tags: [bootstrap, user]
+
+  - name: add configured pub key as authorized key for user
+    authorized_key: user={{username}} key="{{ lookup('file', '{{public_key}}') }}"
+    tags: [bootstrap, user]

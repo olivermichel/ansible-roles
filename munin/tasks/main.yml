@@ -1,0 +1,60 @@
+---
+- name: EPEL repository is present
+  yum: name=epel-release state=present
+  tags: [munin, install]
+
+- name: EPEL GPG key is imported
+  rpm_key:
+    key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+    state: present
+  tags: [munin, install]
+
+- name: munin is installed
+  yum: name=munin state=installed
+  tags: [munin, install]
+
+- name: munin-node is installed
+  yum: name=munin-node state=installed
+  tags: [munin, install]
+
+- name: python-passlib is installed
+  yum: name=python-passlib state=installed
+  tags: [munin, install]
+
+- name: httpd is installed
+  yum: name=httpd state=installed
+  tags: [munin, install]
+
+- name: httpd is enabled and running
+  service: name=httpd state=running enabled=yes
+  tags: [munin, install]
+
+- name: munin-node is enabled and running
+  service: name=munin-node state=running enabled=yes
+  tags: [munin, install]
+
+- name: munin configuration is installed
+  template:
+    src: munin.conf.j2
+    dest: /etc/munin/munin.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags: [munin, install]
+
+- name: munin user is created
+  htpasswd:
+    create: yes
+    name: "{{ munin_admin_user }}"
+    password: "{{ munin_admin_password }}"
+    path: /etc/munin/munin-htpasswd
+    state: present
+  tags: [munin, install]
+
+- name: munin cron job is running
+  lineinfile:
+    dest: /etc/cron.d/munin
+    state: present
+    regexp: "^\\*/5 \\* \\* \\* \\*"
+    line: "*/5 * * * *     munin test -x /usr/bin/munin-cron && /usr/bin/munin-cron"
+  tags: [munin, install]

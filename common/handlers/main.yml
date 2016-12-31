@@ -1,7 +1,13 @@
 ---
 - name: restart sshd
-  service: name=sshd state=restarted
+  service:
+    name: sshd
+    state: restarted
+
 - name: restart ntp
-  service: name=ntpd state=restarted
+  service:
+    name: ntpd
+    state: restarted
+
 - name: rehash aliases
   command: newaliases

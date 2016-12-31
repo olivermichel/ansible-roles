@@ -1,62 +1,82 @@
 ---
 - name: selinux  is enforcing
-  selinux: policy=targeted state=enforcing
-  tags: [selinux, check]
-  always_run: yes
+  selinux:
+    policy: targeted
+    state: enforcing
 
 - name: sshd - root access is not allowed
-  lineinfile: dest=/etc/ssh/sshd_config regexp="^PermitRootLogin" line="PermitRootLogin no" state=present
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: ^PermitRootLogin
+    line: PermitRootLogin no
+    state: present
   notify: restart sshd
-  tags: [sshd]
 
 - name: sshd - password authentication is not allowed
-  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no" state=present
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: ^PasswordAuthentication
+    line: PasswordAuthentication no
+    state: present
   notify: restart sshd
-  tags: [sshd]
 
 - name: sshd - access is only allowed for admin_user
-  lineinfile: dest=/etc/ssh/sshd_config regexp="^AllowUsers" line="AllowUsers {{admin_user}}" state=present
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: ^AllowUsers
+    line: "AllowUsers {{admin_user}}"
+    state: present
   notify: restart sshd
-  tags: [sshd]
 
 - name: sshd - only ssh protocol version 2 is allowed
-  lineinfile: dest=/etc/ssh/sshd_config regexp="^Protocol" line="Protocol 2" state=present
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: ^Protocol
+    line: Protocol 2
+    state: present
   notify: restart sshd
-  tags: [sshd]
 
-- name: time - ntp cient is installed
-  yum: name=ntp state=present
-  tags: time
+- name: time - ntp client is installed
+  yum:
+    name: ntp
+    state: present
 
 - name: time - ntp client is configured
-  template: src=ntp.conf.j2 dest=/etc/ntp.conf
-  tags: time
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
   notify: restart ntp
 
 - name: time - ntp client is running
-  service: name=ntpd state=started enabled=yes
-  tags: [time, check]
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
 
 - name: time - timezone is set to utc
-  file: src=/usr/share/zoneinfo/UTC  dest=/etc/localtime state=link force=yes
-  tags: [time]
+  file:
+    src: /usr/share/zoneinfo/UTC
+    dest: /etc/localtime
+    state: link
+    force: yes
 
 - name: mail - postfix is installed
-  yum: name=postfix state=installed
-  tags: [mail]
+  yum:
+    name: postfix
+    state: installed
 
 - name: mail - postfix is started and enabled
-  service: name=postfix state=started enabled=yes
-  tags: [mail, check]
+  service:
+    name: postfix
+    state: started
+    enabled: yes
 
 - name: mail - root mail is being forwarded to admin user
   lineinfile:
     dest: /etc/aliases
     regexp: "^root"
-    line: "root: {{ admin_user }}"
+    line: "root: {{admin_user}}"
   notify: rehash aliases
-  tags:
-    - mail
 
 - name: mail - admin user mail is being forwarded to external address
   lineinfile:
@@ -64,44 +84,37 @@
     regexp: "^{{admin_user}}"
     line: "{{admin_user}}: {{admin_mail_forward}}"
   notify: rehash aliases
-  tags:
-    - mail
 
-- name: auto update - cronie is installed
-  yum: name=cronie state=installed
-  tags: auto-update
+- name: cron - cronie is installed
+  yum:
+    name: cronie
+    state: installed
 
-- name: auto update - cron is running and enabled
-  service: name=crond state=running enabled=yes
-  tags: auto-update
-
-- name: auto update - yum-cron is installed
-  yum: name=yum-cron state=installed
-  tags: auto-update
-
-- name: auto update - yum-cron is configured based on template
-  template: src=yum-cron.conf.j2 dest=/etc/yum/yum-cron.conf
-  tags: auto-update
-
-- name: auto update - yum-cron service is enabled
-  service: name=yum-cron state=running enabled=yes
-  tags: auto-update
+- name: cron - crond is running and enabled
+  service:
+    name: crond
+    state: running
+    enabled: yes
 
 - name: tools - git is installed
-  yum: name=git state=installed
-  tags: tools
+  yum:
+    name: git
+    state: installed
 
 - name: tools - tmux is installed
-  yum: name=tmux state=installed
-  tags: tools
+  yum:
+    name: tmux
+    state: installed
 
 - name: tools - tree is installed
-  yum: name=tree state=installed
-  tags: tools
+  yum:
+    name: tree
+    state: installed
 
 - name: dotfiles - repository is checked out
-  git: repo=https://github.com/olivermichel/dotfiles.git dest=/home/{{admin_user}}/.dotfiles
-  tags: dotfiles
+  git:
+    repo: https://github.com/olivermichel/dotfiles.git
+    dest: /home/{{admin_user}}/.dotfiles
 
 - name: dotfiles - include bash configuration
   blockinfile:
@@ -111,8 +124,9 @@
       . ~/.dotfiles/sh/linux.sh
       . ~/.dotfiles/sh/bash/config.bash
       . ~/.dotfiles/sh/bash/prompt-min.bash
-  tags: dotfiles
 
 - name: dotfiles - link tmux.conf
-  file: src=/home/{{admin_user}}/.dotfiles/tmux.conf dest=/home/{{admin_user}}/.tmux.conf state=link
-  tags: dotfiles
+  file:
+    src: /home/{{admin_user}}/.dotfiles/tmux.conf
+    dest: /home/{{admin_user}}/.tmux.conf
+    state: link

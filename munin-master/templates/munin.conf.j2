@@ -9,6 +9,8 @@ cgiurl_graph /munin-cgi/munin-cgi-graph
 html_strategy cron
 max_processes 8
 
-[{{inventory_hostname}}]
-    address 127.0.0.1
+{% for host in munin_hosts %}
+[{{ host.name }}]
+    address {{ host.address }}
     use_node_name yes
+{% endfor %}

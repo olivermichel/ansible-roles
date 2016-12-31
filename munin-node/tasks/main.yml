@@ -1,0 +1,29 @@
+---
+- name: EPEL repository is present
+  yum:
+    name: epel-release
+    state: present
+
+- name: EPEL GPG key is imported
+  rpm_key:
+    key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+    state: present
+
+- name: munin-node is installed
+  yum:
+    name: munin-node
+    state: installed
+
+- name: munin-node configuration is installed
+  template:
+    src: munin-node.conf.j2
+    dest: /etc/munin/munin-node.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: munin-node is enabled and running
+  service:
+    name: munin-node
+    state: running
+    enabled: yes

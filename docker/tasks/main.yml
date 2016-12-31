@@ -1,20 +1,23 @@
 ---
 -   name: python-setuptools is installed
-    yum: name=python-setuptools
-    tags: [docker, install]
+    yum:
+      name: python-setuptools
 
 -   name: pypi is installed
-    easy_install: name=pip
-    tags: [docker, install]
+    easy_install:
+      name: pip
 
 -   name: docker-py is installed
-    pip: name=docker-py
-    tags: [docker, install]
+    pip:
+      name: docker-py
 
 -   name: docker is installed
-    yum: name=docker state=installed
-    tags: [docker, install]
+    yum:
+      name: docker
+      state: installed
 
 -   name: docker is enabled and running
-    service: name=docker state=running enabled=yes
-    tags: [docker, check]
+    service:
+      name: docker
+      state: running
+      enabled: yes

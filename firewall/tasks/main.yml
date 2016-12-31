@@ -1,32 +1,40 @@
 ---
 - name: python-setuptools is installed
-  yum: name=python-setuptools state=installed
-  tags: [firewall, install]
+  yum:
+    name: python-setuptools
+    state: installed
 
 - name: python bindings are installed
-  easy_install: name=firewall state=present
-  tags: [firewall, install]
+  easy_install:
+    name: firewall
+    state: present
 
 - name: is installed
-  yum: name=firewalld state=installed
-  tags: [firewall, install]
-
-- name: is enabled
-  service: name=firewalld enabled=yes
-  tags: [firewall, install]
+  yum:
+    name: firewalld
+    state: installed
 
 - name: interface to Internet is in public zone
-  firewalld: zone=public interface={{public_interface}} permanent=true state=enabled
+  firewalld:
+    zone: public
+    interface: enp0s3
+    permanent: true
+    state: enabled
   notify:
     - reload firewall
-  tags: [firewall, configure]
 
-- name: port 22/tcp is open in public zone
-  firewalld: zone=public port=22/tcp state=enabled permanent=true
+- name: port rules are configured
+  firewalld:
+    port: "{{item.value.port}}"
+    zone: "{{item.value.zone}}"
+    permanent: true
+    state: "{{item.value.state}}"
+  with_dict: "{{firewall_port_rules}}"
   notify:
     - reload firewall
-  tags: [firewall, configure]
 
-- name: is running
-  service: name=firewalld state=running enabled=yes
-  tags: [firewall, check]
+- name: is enabled and running
+  service:
+    name: firewalld
+    state: running
+    enabled: yes

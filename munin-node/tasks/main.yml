@@ -27,3 +27,36 @@
     name: munin-node
     state: running
     enabled: yes
+
+- name: create munin 3rd party plugin directory
+  file:
+    path: /usr/local/munin/lib/plugins
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+    recurse: yes
+
+- name: munin yum script is installed
+  copy:
+    src: yum
+    dest: /usr/local/munin/lib/plugins
+    owner: root
+    group: root
+    mode: 0755
+
+- name: munin yum script is symlinked to /etc/munin/plugins
+  file:
+    src: /usr/local/munin/lib/plugins/yum
+    dest: /etc/munin/plugins/yum
+    owner: root
+    group: root
+    state: link
+  notify: restart munin-node
+
+- name: munin yum script is in root's crontab
+  cron:
+    name: "run munin yum update script"
+    job: "/usr/local/munin/lib/plugins/yum update"
+    user: root
+    special_time: daily

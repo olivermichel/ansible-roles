@@ -2,9 +2,7 @@
 
 My collection of Ansible Roles for CentOS 7
 
-## Roles
-
-### common
+## common
 
 #### Description
 Base configuration for CentOS7 servers including security relevant settings:
@@ -16,14 +14,14 @@ Base configuration for CentOS7 servers including security relevant settings:
 * dotfiles from [https://github.com/olivermichel/dotfiles](this repository)
 
 #### Variables
-* admin_user -- the name for the admin user
-* admin_mail_forward -- email address where user's mail should be forwarded to
-* ntp_server -- NTP server address, default: pool.ntp.org
+* `admin_user`: the name for the admin user
+* `admin_mail_forward`: email address where user's mail should be forwarded to
+* `ntp_server`: NTP server address, default: pool.ntp.org
 
-### docker
+## docker
 
-### firewall
+## firewall
 
-### munin-master
+## munin-master
 
-### munin-node
+## munin-node

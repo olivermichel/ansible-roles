@@ -21,6 +21,8 @@
     owner: root
     group: root
     mode: 0644
+  notify:
+    - restart munin-node
 
 - name: munin-node is enabled and running
   service:
@@ -52,7 +54,9 @@
     owner: root
     group: root
     state: link
-  notify: restart munin-node
+  notify:
+    - restart munin-node
+    - run yum update script
 
 - name: munin yum script is in root's crontab
   cron:

@@ -3,3 +3,6 @@
   service:
     name: munin-node
     state: restarted
+
+- name: run yum update script
+  command: /usr/local/munin/lib/plugins/yum update

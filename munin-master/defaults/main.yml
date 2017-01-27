@@ -1,4 +1,6 @@
 ---
-munin_hosts:
+nodes:
   - name: localhost
     address: 127.0.0.1
+web_user: admin
+web_password: admin

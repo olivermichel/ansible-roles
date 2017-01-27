@@ -20,6 +20,14 @@
     state: present
   notify: restart sshd
 
+- name: sshd - challenge response authentication is not allowed
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: ^ChallengeResponseAuthentication
+    line: ChallengeResponseAuthentication no
+    state: present
+  notify: restart sshd
+
 - name: sshd - access is only allowed for admin_user
   lineinfile:
     dest: /etc/ssh/sshd_config

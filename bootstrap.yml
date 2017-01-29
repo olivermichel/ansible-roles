@@ -1,0 +1,49 @@
+# ansible-playbook -k -i <ip>, bootstrap.yml
+---
+- hosts: all
+  user: root
+  vars_prompt:
+  - name: "hostname"
+    prompt: "hostname for machine"
+    private: no
+
+  - name: "fqdn"
+    prompt: "FQDN for machine"
+    private: no
+
+  - name: "username"
+    prompt: "username for new user"
+    private: no
+
+  - name: "password"
+    prompt: "password for new user"
+    private: yes
+    encrypt: "md5_crypt" #need to have python-passlib installed in local machine before we can use it
+    confirm: yes
+    salt_size: 7
+
+  - name: "public_key"
+    prompt: "location of public key file"
+    default: "~/.ssh/id_ed25519.pub"
+    private: no
+
+  tasks:
+  - name: set hostname
+    hostname: name={{ hostname }}
+    when: hostname is defined
+
+  - name: update /etc/hosts
+    lineinfile:
+      dest=/etc/hosts
+      regexp="^127\.0\.1\.1"
+      line="127.0.1.1{{'\t'}}{% if hostname != fqdn %}{{ fqdn }}{{'\t'}}{% endif %}{{ hostname }}"
+      state=present
+
+  - name: install libselinux-python
+    yum: name=libselinux-python state=installed
+
+  - name: create user and add to wheel group
+    user: name={{username}} password={{password}} group=wheel
+
+  - name: add configured pub key as authorized key for user
+    authorized_key: user={{username}} key="{{ lookup('file', '{{public_key}}') }}"

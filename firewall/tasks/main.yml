@@ -17,15 +17,16 @@
 - name: interface to Internet is in public zone
   firewalld:
     zone: public
-    interface: enp0s3
+    interface: "{{firewall_public_iface}}"
     permanent: true
     state: enabled
   notify:
     - reload firewall
 
-- name: port rules are configured
+- name: zone rules are configured
   firewalld:
     port: "{{item.value.port}}"
+    source: "{{item.value.source}}"
     zone: "{{item.value.zone}}"
     permanent: true
     state: "{{item.value.state}}"

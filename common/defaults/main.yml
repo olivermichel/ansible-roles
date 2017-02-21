@@ -1,2 +1,7 @@
 ---
-ntp_server: pool.ntp.org
+ntp:
+  server: pool.ntp.org
+
+sshd:
+  allow_users: admin
+  port: 22

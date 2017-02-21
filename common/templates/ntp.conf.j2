@@ -1,9 +1,11 @@
+# this file was provisioned by ansible
+
 driftfile /var/lib/ntp/drift
 
 restrict 127.0.0.1
 restrict -6 ::1
 
-server {{ ntp_server }} iburst
+server {{ ntp.server }} iburst
 
 includefile /etc/ntp/crypto/pw
 

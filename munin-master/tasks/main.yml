@@ -19,17 +19,20 @@
     name: python-passlib
     state: installed
 
-- name: httpd is installed
+- name: nginx is installed
   yum:
-    name: httpd
+    name: nginx
     state: installed
 
-- name: httpd is enabled and running
-  service:
-    name: httpd
-    state: running
-    enabled: yes
-
+- name: nginx is configured
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload nginx
+    
 - name: munin-node is enabled and running
   service:
     name: munin-node

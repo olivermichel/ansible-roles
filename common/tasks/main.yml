@@ -111,3 +111,8 @@
     src: /home/{{admin_user}}/.dotfiles/tmux.conf
     dest: /home/{{admin_user}}/.tmux.conf
     state: link
+
+- name: logwatch - is installed
+  yum:
+    name: logwatch
+    state: installed

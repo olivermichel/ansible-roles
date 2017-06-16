@@ -27,7 +27,7 @@
 - name: munin-node is enabled and running
   service:
     name: munin-node
-    state: running
+    state: started
     enabled: yes
 
 - name: create munin 3rd party plugin directory

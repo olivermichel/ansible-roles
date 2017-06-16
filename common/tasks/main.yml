@@ -74,7 +74,7 @@
 - name: cron - crond is running and enabled
   service:
     name: crond
-    state: running
+    state: started
     enabled: yes
 
 - name: tools - git is installed

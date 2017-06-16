@@ -19,5 +19,5 @@
 -   name: docker is enabled and running
     service:
       name: docker
-      state: running
+      state: started
       enabled: yes

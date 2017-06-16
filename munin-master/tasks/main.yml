@@ -32,11 +32,11 @@
     group: root
     mode: 0644
   notify: reload nginx
-    
+
 - name: munin-node is enabled and running
   service:
     name: munin-node
-    state: running
+    state: started
     enabled: yes
 
 - name: munin configuration is installed

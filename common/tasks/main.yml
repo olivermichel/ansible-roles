@@ -1,5 +1,10 @@
 ---
-- name: selinux  is enforcing
+- name: policycoreutils-python is installed
+  yum:
+    name: policycoreutils-python
+    state: present
+
+- name: selinux is enforcing
   selinux:
     policy: targeted
     state: enforcing

@@ -1,0 +1,14 @@
+- name: tools - git is installed
+  yum:
+    name: git
+    state: installed
+
+- name: tools - tmux is installed
+  yum:
+    name: tmux
+    state: installed
+
+- name: tools - tree is installed
+  yum:
+    name: tree
+    state: installed

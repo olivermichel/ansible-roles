@@ -1,0 +1,11 @@
+---
+- name: cron - cronie is installed
+  yum:
+    name: cronie
+    state: installed
+
+- name: cron - crond is running and enabled
+  service:
+    name: crond
+    state: started
+    enabled: yes

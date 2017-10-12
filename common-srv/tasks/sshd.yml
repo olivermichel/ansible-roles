@@ -1,0 +1,23 @@
+---
+- name: sshd - configured non-standard port through selinux
+  seport:
+    ports: "{{ sshd.port }}"
+    proto: tcp
+    setype: ssh_port_t
+    state: present
+
+- name: sshd - ssh server is configured
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+  notify: restart sshd
+
+- name: sshd - firewall is configured
+  firewalld:
+    port: "{{ sshd.port }}/tcp"
+    source: 0.0.0.0/0
+    zone: "{{ firewall.public_zone }}"
+    permanent: true
+    state: enabled
+  notify:
+    - reload firewall

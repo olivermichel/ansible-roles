@@ -11,3 +11,6 @@
 
 - name: rehash aliases
   command: newaliases
+
+- name: reload firewall
+  command: firewall-cmd --reload

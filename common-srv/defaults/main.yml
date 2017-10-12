@@ -5,3 +5,6 @@ ntp:
 sshd:
   allow_users: admin
   port: 22
+
+firewall:
+  public_zone: public

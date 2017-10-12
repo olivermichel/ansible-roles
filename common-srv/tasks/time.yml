@@ -1,0 +1,24 @@
+---
+- name: time - ntp client is installed
+  yum:
+    name: ntp
+    state: present
+
+- name: time - ntp client is configured
+  template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+  notify: restart ntp
+
+- name: time - ntp client is running
+  service:
+    name: ntpd
+    state: started
+    enabled: yes
+
+- name: time - timezone is set to utc
+  file:
+    src: /usr/share/zoneinfo/UTC
+    dest: /etc/localtime
+    state: link
+    force: yes

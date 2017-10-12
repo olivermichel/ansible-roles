@@ -9,115 +9,17 @@
     policy: targeted
     state: enforcing
 
-- name: sshd - configured non-standard port through selinux
-  seport:
-    ports: "{{ sshd.port }}"
-    proto: tcp
-    setype: ssh_port_t
-    state: present
-
-- name: sshd - ssh server is configured
-  template:
-    src: sshd_config.j2
-    dest: /etc/ssh/sshd_config
-  notify: restart sshd
-
-- name: time - ntp client is installed
-  yum:
-    name: ntp
-    state: present
-
-- name: time - ntp client is configured
-  template:
-    src: ntp.conf.j2
-    dest: /etc/ntp.conf
-  notify: restart ntp
-
-- name: time - ntp client is running
-  service:
-    name: ntpd
-    state: started
-    enabled: yes
-
-- name: time - timezone is set to utc
-  file:
-    src: /usr/share/zoneinfo/UTC
-    dest: /etc/localtime
-    state: link
-    force: yes
-
-- name: mail - postfix is installed
-  yum:
-    name: postfix
-    state: installed
-
-- name: mail - postfix is started and enabled
-  service:
-    name: postfix
-    state: started
-    enabled: yes
-
-- name: mail - root mail is being forwarded to admin user
-  lineinfile:
-    dest: /etc/aliases
-    regexp: "^root"
-    line: "root: {{admin_user}}"
-  notify: rehash aliases
-
-- name: mail - admin user mail is being forwarded to external address
-  lineinfile:
-    dest: /etc/aliases
-    regexp: "^{{admin_user}}"
-    line: "{{admin_user}}: {{admin_mail_forward}}"
-  notify: rehash aliases
-
-- name: cron - cronie is installed
-  yum:
-    name: cronie
-    state: installed
-
-- name: cron - crond is running and enabled
-  service:
-    name: crond
-    state: started
-    enabled: yes
-
-- name: tools - git is installed
-  yum:
-    name: git
-    state: installed
-
-- name: tools - tmux is installed
-  yum:
-    name: tmux
-    state: installed
-
-- name: tools - tree is installed
-  yum:
-    name: tree
-    state: installed
-
-- name: dotfiles - repository is checked out
-  git:
-    repo: https://github.com/olivermichel/dotfiles.git
-    dest: /home/{{admin_user}}/.dotfiles
-
-- name: dotfiles - include bash configuration
-  blockinfile:
-    dest: /home/{{admin_user}}/.bashrc
-    block: |
-      . ~/.dotfiles/sh/common.sh
-      . ~/.dotfiles/sh/linux.sh
-      . ~/.dotfiles/sh/bash/config.bash
-      . ~/.dotfiles/sh/bash/prompt-min.bash
-
-- name: dotfiles - link tmux.conf
-  file:
-    src: /home/{{admin_user}}/.dotfiles/tmux.conf
-    dest: /home/{{admin_user}}/.tmux.conf
-    state: link
-
 - name: logwatch - is installed
   yum:
     name: logwatch
     state: installed
+
+- include_tasks: sshd.yml
+
+- include_tasks: time.yml
+
+- include_tasks: mail.yml
+
+- include_tasks: cron.yml
+
+- include_tasks: tools.yml

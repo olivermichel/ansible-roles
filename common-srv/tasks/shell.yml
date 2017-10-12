@@ -1,0 +1,20 @@
+---
+- name: shell - dotfiles repository is checked out
+  git:
+    repo: https://github.com/olivermichel/dotfiles.git
+    dest: /home/{{admin_user}}/.dotfiles
+
+- name: shell - include bash configuration
+  blockinfile:
+    dest: /home/{{admin_user}}/.bashrc
+    block: |
+      . ~/.dotfiles/sh/common.sh
+      . ~/.dotfiles/sh/linux.sh
+      . ~/.dotfiles/sh/bash/config.bash
+      . ~/.dotfiles/sh/bash/prompt-min.bash
+
+- name: shell - link tmux.conf
+  file:
+    src: /home/{{admin_user}}/.dotfiles/tmux.conf
+    dest: /home/{{admin_user}}/.tmux.conf
+    state: link

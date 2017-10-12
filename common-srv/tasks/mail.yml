@@ -1,0 +1,25 @@
+---
+- name: mail - postfix is installed
+  yum:
+    name: postfix
+    state: installed
+
+- name: mail - postfix is started and enabled
+  service:
+    name: postfix
+    state: started
+    enabled: yes
+
+- name: mail - root mail is being forwarded to admin user
+  lineinfile:
+    dest: /etc/aliases
+    regexp: "^root"
+    line: "root: {{admin_user}}"
+  notify: rehash aliases
+
+- name: mail - admin user mail is being forwarded to external address
+  lineinfile:
+    dest: /etc/aliases
+    regexp: "^{{admin_user}}"
+    line: "{{admin_user}}: {{admin_mail_forward}}"
+  notify: rehash aliases

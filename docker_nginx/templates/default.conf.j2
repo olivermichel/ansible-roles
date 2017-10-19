@@ -1,0 +1,14 @@
+server {
+    listen       {{ listen_port }} default_server;
+    listen       [::]:{{ listen_port }} default_server;
+    server_name  _;
+    root         /var/www;
+
+    error_page 404 /404.html;
+        location = /40x.html {
+    }
+
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+}

@@ -1,0 +1,47 @@
+---
+- name: image exists (build otherwise)
+  shell: "docker images | grep -q {{ image_name }}"
+  changed_when: False
+  become: true
+  register: image_exists
+
+- name: image is built
+  # when: image_exists.rc != 0
+  include_tasks: build.yml
+
+- name: the public www directory exists
+  become: true
+  file:
+    path: "{{ html_directory }}"
+    state: directory
+    owner: "{{ user.id }}"
+    group: "{{ group.id }}"
+    mode: 0755
+
+- name: index.html is installed
+  become: true
+  template:
+    src: index.html.j2
+    dest: "{{ html_directory }}/index.html"
+    owner: "{{ user.id }}"
+    group: "{{ group.id }}"
+    mode: 0644
+
+- name: container is running
+  become: true
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ image_name }}"
+    state: started
+    published_ports: "{{ listen_port }}:{{ listen_port }}"
+    read_only: yes
+    volumes:
+      - "{{ html_directory }}:/var/www:z,ro"
+
+- name: firewall is configured
+  become: true
+  firewalld:
+    port: "{{ listen_port }}/tcp"
+    zone: public
+    permanent: true
+    state: enabled

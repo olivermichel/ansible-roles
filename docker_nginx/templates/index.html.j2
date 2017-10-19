@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ ansible_fqdn }}</title>
+</head>
+<body>
+  <pre>{{ html_directory}}/index.html</pre>
+  <pre>nginx on {{ ansible_fqdn }} configured {{ ansible_date_time.iso8601 }}</pre>
+</body>
+</html>

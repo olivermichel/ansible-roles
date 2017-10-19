@@ -1,0 +1,28 @@
+---
+- name: create staging directory
+  tempfile:
+    state: directory
+  register: staging_dir
+
+- name: required templates are processed and copied
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ staging_dir.path }}/{{ item }}"
+  with_items:
+    - default.conf
+    - Dockerfile
+    - nginx.conf
+    - supervisord.conf
+
+- name: docker image is built
+  become: true
+  docker_image:
+    name: "{{ image_name }}"
+    path: "{{ staging_dir.path }}"
+    force: yes
+    state: present
+
+- name: remove staging dir
+  file:
+    path: "{{ staging_dir.path }}"
+    state: absent

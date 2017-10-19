@@ -1,0 +1,8 @@
+[supervisord]
+nodaemon=true
+logfile=/var/log/supervisord/supervisord.log
+pidfile=/var/run/supervisord/supervisord.pid
+
+[program:nginx]
+command=/usr/sbin/nginx
+autorestart=true

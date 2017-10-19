@@ -1,0 +1,10 @@
+listen_port: 80
+image_name: nginx_test
+container_name: nginx_test
+html_directory: /srv/nginx_www
+user:
+  id: 8764
+  name: www
+group:
+  id: 8764
+  name: www

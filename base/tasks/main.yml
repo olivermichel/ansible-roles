@@ -1,0 +1,28 @@
+---
+- name: base dev packages are installed
+  become: true
+  apt: update_cache=yes name={{item}} state=present
+  with_items:
+    - git
+    - tmux
+    - tree
+
+- name: dotfiles - repository is checked out
+  git:
+    repo: https://github.com/olivermichel/dotfiles.git
+    dest: /home/{{common.user_name}}/.dotfiles
+
+- name: dotfiles - bash config is included in .bashrc
+  blockinfile:
+    dest: /home/{{common.user_name}}/.bashrc
+    block: |
+      . ~/.dotfiles/sh/common.sh
+      . ~/.dotfiles/sh/linux.sh
+      . ~/.dotfiles/sh/bash/config.bash
+      . ~/.dotfiles/sh/bash/prompt-min.bash
+
+- name: dotfiles - tmux.conf is linked
+  file:
+    src: /home/{{common.user_name}}/.dotfiles/tmux.conf
+    dest: /home/{{common.user_name}}/.tmux.conf
+    state: link

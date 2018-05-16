@@ -1,0 +1,11 @@
+---
+- name: repository is checked out
+  git: repo=https://github.com/luigirizzo/netmap.git version=v11.4 \
+    dest=/home/{{ ansible_user_id }}/opt/netmap
+
+- name: netmap is built
+  make: chdir=/home/{{ ansible_user_id }}/opt/netmap
+
+- name: netmap is installed
+  become: true
+  make: chdir=/home/{{ ansible_user_id }}/opt/netmap target=install

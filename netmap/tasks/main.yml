@@ -1,11 +1,30 @@
 ---
 - name: repository is checked out
-  git: repo=https://github.com/luigirizzo/netmap.git version=v11.4 \
-    dest=/home/{{ ansible_user_id }}/opt/netmap
+  git:
+    repo: https://github.com/luigirizzo/netmap.git
+    version: v11.4
+    dest: "/home/{{ ansible_user_id }}/opt/netmap"
 
-- name: netmap is built
-  make: chdir=/home/{{ ansible_user_id }}/opt/netmap
+- name: build is configured
+  command: ./configure
+  args:
+    chdir: "/home/{{ ansible_user_id }}/opt/netmap/LINUX"
+    creates: config.status
 
-- name: netmap is installed
+- name: is built
+  command: make
+  args:
+    chdir: "/home/{{ ansible_user_id }}/opt/netmap/LINUX"
+    creates: netmap.ko
+
+- name: get kernel version
+  command: uname -r
+  register: kernel_release
+  changed_when: False
+
+- name: is installed
   become: true
-  make: chdir=/home/{{ ansible_user_id }}/opt/netmap target=install
+  command: make install
+  args:
+      chdir: "/home/{{ ansible_user_id }}/opt/netmap/LINUX"
+      creates: "/lib/modules/{{ kernel_release.stdout }}/extra/netmap.ko"

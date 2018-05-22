@@ -7,6 +7,18 @@
     - tmux
     - tree
 
+- name: ssh keypair is generated
+  shell: "ssh-keygen -b 2048 -t rsa -f '/home/{{common.user_name}}/.ssh/id_rsa' -q \
+    -C '{{common.user_name}}/{{ ansible_nodename }}' -N ''"
+  args:
+    creates: "/home/{{common.user_name}}/.ssh/id_rsa"
+
+- name: ~/.ssh is mode 0700
+  file:
+    path: "/home/{{common.user_name}}/.ssh"
+    owner: "{{common.user_name}}"
+    mode: 0700
+
 - name: dotfiles - repository is checked out
   git:
     repo: https://github.com/olivermichel/dotfiles.git

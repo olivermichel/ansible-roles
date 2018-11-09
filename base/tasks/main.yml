@@ -1,14 +1,9 @@
 ---
-- name: base dev packages are installed
-  become: true
-  apt: update_cache=yes name={{packages}} state=present
-  vars:
-    packages:
-      - git
-      - tmux
-      - tree
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
+- include: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_distribution | lower }}.yml'
+    - 'fail.yml'
+    
 - name: ssh keypair is generated
   shell: "ssh-keygen -b 2048 -t rsa -f '/home/{{base.user_name}}/.ssh/id_rsa' -q \
     -C '{{base.user_name}}/{{ ansible_nodename }}' -N ''"

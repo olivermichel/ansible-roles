@@ -1,9 +1,5 @@
 ---
-- name: dev packages are installed
-  become: true
-  apt: update_cache=yes name={{item}} state=present
-  with_items:
-    - automake
-    - cmake
-    - g++
-    - git
+- include: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_distribution | lower }}.yml'
+    - 'fail.yml'

@@ -1,0 +1,14 @@
+---
+- name: docker is installed
+  become: true
+  apt: name=docker state=present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: docker-compose is installed
+  become: true
+  apt: name=docker-compose state=present
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: docker is enabled and running
+  become: true
+  service: name=docker state=started enabled=yes

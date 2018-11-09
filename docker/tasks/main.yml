@@ -1,23 +1,5 @@
 ---
--   name: python-setuptools is installed
-    yum:
-      name: python-setuptools
-
--   name: pypi is installed
-    easy_install:
-      name: pip
-
--   name: docker-py is installed
-    pip:
-      name: docker-py
-
--   name: docker is installed
-    yum:
-      name: docker
-      state: installed
-
--   name: docker is enabled and running
-    service:
-      name: docker
-      state: started
-      enabled: yes
+- include: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_distribution | lower }}.yml'
+    - 'fail.yml'

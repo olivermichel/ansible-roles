@@ -1,32 +1,29 @@
 ---
 - name: base dev packages are installed
   become: true
-  apt: update_cache=yes name={{item}} state=present
-  with_items:
-    - git
-    - tmux
-    - tree
+  apt: update_cache=yes name={{packages}} state=present
+  vars:
+    packages:
+      - git
+      - tmux
+      - tree
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: ssh keypair is generated
-  shell: "ssh-keygen -b 2048 -t rsa -f '/home/{{common.user_name}}/.ssh/id_rsa' -q \
-    -C '{{common.user_name}}/{{ ansible_nodename }}' -N ''"
+  shell: "ssh-keygen -b 2048 -t rsa -f '/home/{{base.user_name}}/.ssh/id_rsa' -q \
+    -C '{{base.user_name}}/{{ ansible_nodename }}' -N ''"
   args:
-    creates: "/home/{{common.user_name}}/.ssh/id_rsa"
+    creates: "/home/{{base.user_name}}/.ssh/id_rsa"
 
 - name: ~/.ssh is mode 0700
-  file:
-    path: "/home/{{common.user_name}}/.ssh"
-    owner: "{{common.user_name}}"
-    mode: 0700
+  file: path=/home/{{base.user_name}}/.ssh owner={{base.user_name}} mode=0700
 
-- name: dotfiles - repository is checked out
-  git:
-    repo: https://github.com/olivermichel/dotfiles.git
-    dest: /home/{{common.user_name}}/.dotfiles
+- name: dotfiles repository is checked out
+  git: repo=https://github.com/olivermichel/dotfiles.git dest=/home/{{base.user_name}}/.dotfiles
 
-- name: dotfiles - bash config is included in .bashrc
+- name: bash config is included in .bashrc
   blockinfile:
-    dest: /home/{{common.user_name}}/.bashrc
+    dest: /home/{{base.user_name}}/.bashrc
     block: |
       . ~/.dotfiles/sh/common.sh
       . ~/.dotfiles/sh/linux.sh
@@ -34,7 +31,5 @@
       . ~/.dotfiles/sh/bash/prompt-min.bash
 
 - name: dotfiles - tmux.conf is linked
-  file:
-    src: /home/{{common.user_name}}/.dotfiles/tmux.conf
-    dest: /home/{{common.user_name}}/.tmux.conf
-    state: link
+  file: src=/home/{{base.user_name}}/.dotfiles/tmux.conf dest=/home/{{base.user_name}}/.tmux.conf \
+    state=link

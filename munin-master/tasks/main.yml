@@ -33,12 +33,6 @@
     mode: 0644
   notify: reload nginx
 
-- name: munin-node is enabled and running
-  service:
-    name: munin-node
-    state: started
-    enabled: yes
-
 - name: munin configuration is installed
   template:
     src: munin.conf.j2

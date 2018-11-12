@@ -6,7 +6,7 @@
   register: image_exists
 
 - name: image is built
-  # when: image_exists.rc != 0
+  when: image_exists.rc != 0
   include_tasks: build.yml
 
 - name: the public www directory exists
@@ -21,6 +21,7 @@
 - name: index.html is installed
   become: true
   template:
+    force: no
     src: index.html.j2
     dest: "{{ html_directory }}/index.html"
     owner: "{{ user.id }}"

@@ -23,16 +23,16 @@
   notify:
     - reload firewall
 
-- name: zone rules are configured
-  firewalld:
-    port: "{{item.value.port}}"
-    source: "{{item.value.source}}"
-    zone: "{{item.value.zone}}"
-    permanent: true
-    state: "{{item.value.state}}"
-  with_dict: "{{firewall_port_rules}}"
-  notify:
-    - reload firewall
+# - name: zone rules are configured
+#   firewalld:
+#     port: "{{item.value.port}}"
+#     source: "{{item.value.source}}"
+#     zone: "{{item.value.zone}}"
+#     permanent: true
+#     state: "{{item.value.state}}"
+#   with_dict: "{{firewall_port_rules}}"
+#   notify:
+#     - reload firewall
 
 - name: is enabled and running
   service:

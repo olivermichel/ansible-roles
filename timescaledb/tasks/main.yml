@@ -1,0 +1,5 @@
+---
+- include: '{{ item }}'
+  with_first_found:
+    - '{{ ansible_distribution | lower }}.yml'
+    - 'fail.yml'

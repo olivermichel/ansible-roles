@@ -1,0 +1,75 @@
+---
+- name: postgres 10 apt key is present
+  become: true
+  apt_key: url='https://www.postgresql.org/media/keys/ACCC4CF8.asc'
+
+- name: postgres 10 apt repository is present
+  become: true
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main'
+
+- name: postgres 10 is installed
+  become: true
+  apt: name=postgresql-10 state=present update_cache=yes
+
+- name: python-psycopg2 is installed
+  become: true
+  apt: name=python-psycopg2
+
+- name: postgresql is configured with timescale extension
+  become: true
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: '^(#?)shared_preload_libraries'
+    line: "shared_preload_libraries = 'timescaledb'"
+  notify:
+    - restart postgresql
+
+- name: postgresql listen_addresses is configured
+  become: true
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: '^(#?)listen_addresses'
+    line: "listen_addresses = '{{listen_addresses}}'"
+  notify:
+    - restart postgresql
+
+- name: allowed hosts are configured
+  become: true
+  lineinfile:
+      path: /etc/postgresql/10/main/pg_hba.conf
+      regexp: '^host(\s+){{db_name}}'
+      line: 'host jetstream jetstream {{allowed_hosts}} md5'
+  notify:
+    - restart postgresql
+
+- name: timescale apt repository is present
+  become: true
+  apt_repository: repo=ppa:timescale/timescaledb-ppa
+
+- name: timescale is installed
+  become: true
+  apt: name=timescaledb-postgresql-10 state=present update_cache=yes
+
+- name: postgresql is enabled and started
+  become: true
+  service: name=postgresql state=started enabled=yes
+# 
+# - name: postgres default user has a password set
+#   become: true
+#   become_user: postgres
+#   postgresql_user: db=postgres name=postgres password={{postgres_user_pw}}
+
+- name: database is configured
+  become: true
+  become_user: postgres
+  postgresql_db: name={{db_name}}
+
+- name: postgres user is configured
+  become: true
+  become_user: postgres
+  postgresql_user: db={{db_name}} name={{user_name}} password={{user_pw}}
+
+- name: timescale extension is enabled
+  become: true
+  become_user: postgres
+  postgresql_ext: name=timescaledb db={{db_name}}

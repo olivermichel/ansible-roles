@@ -1,0 +1,7 @@
+---
+listen_addresses: localhost
+postgres_user_pw: postgres
+user_name:        timescale
+user_pw:          timescale
+db_name:          timescale
+allowed_hosts:    127.0.0.1/32
